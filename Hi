@@ -1,1 +1,110 @@
 
+-- Wait until game is fully loaded
+repeat wait() until game:IsLoaded()
+
+-- Choose Team: Pirates
+if game.Players.LocalPlayer.Team == nil then
+    for _, team in pairs(game:GetService("ReplicatedStorage").Teams:GetChildren()) do
+        if team.Name == "Pirates" then
+            game:GetService("ReplicatedStorage").Remotes.Team:FireServer("Pirates")
+            break
+        end
+    end
+end
+
+-- Auto Redeem All x2 EXP Codes
+local codes = {
+    "SUB2GAMERROBOT_EXP1", "Sub2NoobMaster123", "Axiore", "TantaiGaming", "StrawHatMaine",
+    "Sub2OfficialNoobie", "FUDD10", "BIGNEWS", "THEGREATACE", "KittGaming", "SUB2GAMERROBOT_RESET1"
+}
+
+for _, code in pairs(codes) do
+    pcall(function()
+        game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code)
+    end)
+end
+
+-- Auto Stat Allocation
+spawn(function()
+    while wait(1) do
+        local stats = { "Melee", "Defense", "Sword" }
+        for _, stat in pairs(stats) do
+            game:GetService("ReplicatedStorage").Remotes.AddPoint:InvokeServer(stat, 10)
+        end
+    end
+end)
+
+-- Auto Accept Quest + Auto Farm
+spawn(function()
+    while wait(1) do
+        -- Replace with actual NPC quest name and mob name for your level
+        local questName = "BanditQuest1" -- Change dynamically by level
+        local questLevel = 10
+        local enemyName = "Bandit"
+
+        -- Accept quest
+        local args = { questName, 1 }
+        pcall(function()
+            game:GetService("ReplicatedStorage").Remotes.Comm:InvokeServer("StartQuest", unpack(args))
+        end)
+
+        -- Find and kill enemies
+        for _, mob in pairs(workspace.Enemies:GetChildren()) do
+            if mob.Name == enemyName and mob:FindFirstChild("HumanoidRootPart") then
+                repeat
+                    pcall(function()
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+                        game:GetService("ReplicatedStorage").Remotes.Combat:InvokeServer("MeleeAttack")
+                    end)
+                    wait()
+                until mob.Humanoid.Health <= 0 or mob.Parent == nil
+            end
+        end
+    end
+end)
+
+-- Auto Fruit Pickup
+spawn(function()
+    while wait(2) do
+        for _, fruit in pairs(workspace:GetDescendants()) do
+            if fruit:IsA("Tool") and fruit.Name:find("Fruit") then
+                game.Players.LocalPlayer.Character.Humanoid:EquipTool(fruit)
+            end
+        end
+    end
+end)
+
+-- Auto Travel to Next Island (based on level)
+function travelToIsland(islandName)
+    for _, v in pairs(game.Workspace.Islands:GetChildren()) do
+        if v.Name == islandName then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame + Vector3.new(0, 5, 0)
+        end
+    end
+end
+
+-- Auto Get Saber (simplified)
+function getSaber()
+    -- You must complete puzzles and get Relic; add logic to check and teleport to required locations
+end
+
+-- Auto Fight Boss when max level
+function fightBoss()
+    if game.Players.LocalPlayer.Data.Level.Value >= 2400 then
+        -- Teleport to boss island, accept boss quest
+        -- Attack boss similar to normal mobs
+    end
+end
+
+-- Auto Mastery Up
+spawn(function()
+    while wait(1) do
+        -- Use sword or melee and auto farm to gain mastery
+    end
+end)
+
+-- Auto Get Cursed Dual Katana
+function getCursedSwords()
+    -- Logic to check and complete quests for Tushita + Yama
+    -- Unlock CDK once both are awakened and quests are done
+end
